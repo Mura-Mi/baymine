@@ -13,7 +13,8 @@ tw.search("ベイスターズ").each do |tweet|
                      text: tweet.text,
                      user: tweet.user.screen_name,
                      fav: tweet.favorite_count,
-                     rt: tweet.retweet_count
+                     rt: tweet.retweet_count,
+                     created_at: tweet.created_at
                  }) unless tweet.retweet? || col.count({id: tweet.id}) > 0
 end
 
