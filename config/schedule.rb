@@ -30,3 +30,8 @@ end
 every 10.minutes do
   kick "script/count.rb"
 end
+
+# 1:00 AM - 6:00 AM in JST
+every '*/2 16-21 * * *' do
+  kick "script/count_old.rb"
+end
