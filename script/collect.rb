@@ -19,8 +19,10 @@ begin
   count = 0
 
   tw.search("ベイスターズ").each do |tweet|
-    col.insert_one(BayMine::Tweet.new(tweet).to_hash) if need_to_persist(tweet, col)
-    count += 1
+    if need_to_persist(tweet, col)
+      col.insert_one(BayMine::Tweet.new(tweet).to_hash)
+      count += 1
+    end
   end
 
   logger.info("Persist #{count} tweets to collection tw_test")
