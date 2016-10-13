@@ -1,8 +1,16 @@
 require 'logger'
 require_relative '../lib/persister'
 
-logger = Logger.new("log/count-#{Date.today.strftime('%Y-%m-%d')}.log")
+class BayMine::Count
+  class << self
+    def exec
 
-count = Persister.new.driver[:tw_test].count()
+      logger = Logger.new("log/count-#{Date.today.strftime('%Y-%m-%d')}.log")
 
-logger.info("#{count} tweets was saved.")
+      count = Persister.new.driver[:tw_test].count()
+
+      logger.info("#{count} tweets was saved.")
+
+    end
+  end
+end
