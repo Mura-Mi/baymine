@@ -29,7 +29,5 @@ begin
 
   logger.info("Persist #{count} tweets to collection tw_test")
 rescue => e
-  logger.fatal "error occured while collecting tweets"
-  logger.fatal e.inspect
-  logger.fatal e.backtrace.join("\n")
+  logger.fatal e
 end
