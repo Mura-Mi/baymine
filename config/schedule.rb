@@ -21,10 +21,12 @@
 
 set :output, "./log/cron_log.log"
 
+job_type :kick, 'cd :path && ruby ./:task :output'
+
 every 3.minutes do
-  runner "BayMine::Collect.exec"
+  kick "script/collect.rb"
 end
 
 every 10.minutes do
-  runner "BayMine::Count.exec"
+  kick "script/count.rb"
 end
