@@ -18,8 +18,6 @@ def get_twitter
   end
 end
 
-get_twitter.friends
-
 def get_stream
   Twitter::Streaming::Client.new do |cfg|
     cfg.consumer_key = CONSUMER_KEY
