@@ -33,5 +33,5 @@ end
 
 # 1:00 AM - 6:00 AM in JST
 every '*/2 16-21 * * *' do
-  kick "script/count_old.rb"
+  kick "script/collect_old.rb"
 end
