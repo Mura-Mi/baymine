@@ -19,6 +19,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.10.0)
       faraday (>= 0.7.4, < 0.10)
+    ffi (1.9.14)
     gli (2.14.0)
     hashie (3.4.6)
     http (1.0.4)
@@ -38,6 +39,8 @@ GEM
     mongo (2.3.0)
       bson (~> 4.1)
     multipart-post (2.0.0)
+    natto (1.1.1)
+      ffi (>= 1.9.0)
     naught (1.1.0)
     simple_oauth (0.3.1)
     slack-ruby-client (0.7.7)
@@ -77,6 +80,7 @@ PLATFORMS
 DEPENDENCIES
   dotenv
   mongo
+  natto
   slack-ruby-client
   twitter
   whenever
