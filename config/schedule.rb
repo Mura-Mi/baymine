@@ -32,6 +32,6 @@ every 10.minutes do
 end
 
 # 1:00 AM - 6:00 AM in JST
-every '*/2 16-21 * * *' do
+every '* 16-21 * * *' do
   kick "script/collect_old.rb"
 end
