@@ -1,5 +1,9 @@
+require_relative('./analyze')
+
 module BayMine
   class Tweet
+    ANALYZER = BayMine::Analyzer.new
+
     def initialize(tweet)
       @id = tweet.id
       @text = tweet.text
@@ -16,6 +20,10 @@ module BayMine
           user: @user,
           fav: @fav,
           rt: @rt,
+          keywords: {
+              general: ANALYZER.count_keywords(@text),
+              names: ANALYZER.count_person(@text)
+          },
           created_at: @created_at
       }
     end
