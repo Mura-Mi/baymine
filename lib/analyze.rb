@@ -6,7 +6,7 @@ module BayMine
     # Analyzing Scheme Version (Semantic Version)
     MAJOR = 0
     MINOR = 0
-    PATCH = 1
+    PATCH = 2
 
     def self.version
       {
@@ -71,7 +71,11 @@ module BayMine
 
     def unnecessary?(node)
       fts = node.feature.split(',')
-      %w(助詞 助動詞 記号 BOS/EOS).include?(fts[0]) || fts[1] == '非自立' || node.surface.include?(".") || node.surface[0] == "$"
+      %w(助詞 助動詞 記号 BOS/EOS).include?(fts[0]) ||
+          fts[1] == '非自立' ||
+          node.surface.include?(".") ||
+          node.surface[0] == "$" ||
+          node.surface == "@"
     end
 
     def extract_term(node)
