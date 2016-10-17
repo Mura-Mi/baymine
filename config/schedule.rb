@@ -35,3 +35,7 @@ end
 every '* 16-21 * * *' do
   kick "script/collect_old.rb"
 end
+
+every '1,11,21,31,41,51 * * * *' do
+  kick "script/refine_analyze.rb"
+end
