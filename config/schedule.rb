@@ -21,7 +21,7 @@
 
 set :output, "./log/cron_log.log"
 
-job_type :kick, 'cd :path && ruby ./:task :output'
+job_type :kick, 'cd :path && ruby -EUTF-8 ./:task :output'
 
 every 3.minutes do
   kick "script/collect.rb"
