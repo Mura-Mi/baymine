@@ -21,7 +21,7 @@ begin
                           # TODO improve Sem-Var query
                           {"keywords.version.patch": {"$lt": BayMine::Analyzer.version[:patch]}}
                       ]
-                  }).limit(500).each do |tw|
+                  }).each do |tw|
     collection.update_one({_id: tw[:_id]}, BayMine::Tweet.new(tw).to_hash)
     count += 1
   end
@@ -33,4 +33,4 @@ end
 
 completed = millsec
 
-logger.info("Analyzing #{count} tweet(s) has been completed in #{completed - start} msec.")
+logger.info("Analyzing #{count} tweet(s) has been completed in #{completed - start} msec.") if count > 0
