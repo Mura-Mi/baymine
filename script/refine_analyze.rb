@@ -19,7 +19,7 @@ begin
                       "$or": [
                           {"keywords": {"$exists": false}},
                           # TODO improve Sem-Var query
-                          {"keywords.version.patch": {"$lt": BayMine::Analyzer.version[:patch]}}
+                          {"keywords.v.patch": {"$lt": BayMine::Analyzer.version[:patch]}}
                       ]
                   }).each do |tw|
     collection.update_one({_id: tw[:_id]}, BayMine::Tweet.new(tw).to_hash)
