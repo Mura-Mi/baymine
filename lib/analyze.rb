@@ -3,6 +3,11 @@ require 'natto'
 module BayMine
   class Analyzer
 
+    # Analyzing Scheme Version (Semantic Version)
+    MAJOR = 0
+    MINOR = 0
+    PATCH = 1
+
     def initialize
       @natto = Natto::MeCab.new
     end
