@@ -12,6 +12,20 @@ module BayMine
       @natto = Natto::MeCab.new
     end
 
+    def analyze(sentence)
+      {
+          v: {
+              major: MAJOR,
+              minor: MINOR,
+              patch: PATCH
+          },
+          general: count_keywords(sentence),
+          names: count_person(sentence)
+      }
+    end
+
+    private
+
     def count_keywords(sentence)
       nodes = {}
 

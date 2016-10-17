@@ -20,10 +20,7 @@ module BayMine
           user: @user,
           fav: @fav,
           rt: @rt,
-          keywords: {
-              general: ANALYZER.count_keywords(@text),
-              names: ANALYZER.count_person(@text)
-          },
+          keywords: ANALYZER.analyze(@text),
           created_at: @created_at
       }
     end
