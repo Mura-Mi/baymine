@@ -65,11 +65,9 @@ module BayMine
       nodes
     end
 
-    private
-
     def unnecessary?(node)
       fts = node.feature.split(',')
-      %w(助詞 助動詞 記号 BOS/EOS).include?(fts[0]) || fts[1] == '非自立'
+      %w(助詞 助動詞 記号 BOS/EOS).include?(fts[0]) || fts[1] == '非自立' || node.surface.include?(".") || node.surface[0] == "$"
     end
 
     def extract_term(node)
