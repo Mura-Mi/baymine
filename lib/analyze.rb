@@ -8,17 +8,21 @@ module BayMine
     MINOR = 0
     PATCH = 1
 
+    def self.version
+      {
+          major: MAJOR,
+          minor: MINOR,
+          patch: PATCH
+      }
+    end
+
     def initialize
       @natto = Natto::MeCab.new
     end
 
     def analyze(sentence)
       {
-          v: {
-              major: MAJOR,
-              minor: MINOR,
-              patch: PATCH
-          },
+          v: Analyzer.version,
           general: count_keywords(sentence),
           names: count_person(sentence)
       }
