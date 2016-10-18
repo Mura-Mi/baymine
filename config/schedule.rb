@@ -40,6 +40,6 @@ every '1,11,21,31,41,51 * * * *' do
   kick "script/refine_analyze.rb"
 end
 
-every 1.day, at: '6:00 pm' do
+every 1.hour, at: [17, 47] do
   kick "script/extract_users.rb"
 end
