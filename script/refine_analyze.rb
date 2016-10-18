@@ -12,6 +12,12 @@ logger = Logger.new("log/analyze-#{Date.today.strftime('%Y-%m-%d')}.log")
 start = millsec
 count = 0
 
+limit = if ARGV[0]
+          ARGV[0].to_i
+          else
+            30000;
+        end
+
 begin
   collection = Persister.new.driver[:tw_test]
 
@@ -20,7 +26,7 @@ begin
                           {"keywords": {"$exists": false}},
                           BayMine::Analyzer.version_lt("keywords.v")
                       ]
-                  }).limit(30000).each do |tw|
+                  }).limit(limit).each do |tw|
     collection.update_one({_id: tw[:_id]}, BayMine::Tweet.new(tw).to_hash)
     count += 1
   end
