@@ -15,5 +15,9 @@ class Persister
     @driver[:tw_test]
   end
 
+  def user_repository
+    @driver[:users]
+  end
+
 
 end
