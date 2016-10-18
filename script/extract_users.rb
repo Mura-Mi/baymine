@@ -14,9 +14,6 @@ def millsec
   Time.now.instance_eval { self.to_i * 1000 + (usec / 1000) }
 end
 
-start = millsec
-count = 0
-
 begin
   p = Persister.new
   users = p.user_repository
@@ -29,6 +26,9 @@ begin
     users.update_one({user: username}, {"$set": {user: username}}, {upsert: true}) unless user_list.include?(username)
   }
 
+  start = millsec
+  count = 0
+
   users.find({user_id: {"$exists": false}}).take(limit).each do |u|
     username = u[:user]
     user_in_twitter = tw.user_search(username).find { |twuser| twuser.screen_name.downcase == username }
@@ -37,10 +37,11 @@ begin
 
     count += 1
   end
+
+  fin = millsec
+  logger.info("#{count} users has been updated to be assigned userid in #{fin - start} msec.")
+
 rescue => e
   logger.fatal e
 end
-
-fin = millsec
-logger.info("#{count} users has been updated to be assigned userid in #{fin - start} msec.")
 
