@@ -7,7 +7,7 @@ module BayMine
     # Analyzing Scheme Version (Semantic Version)
     MAJOR = 0
     MINOR = 0
-    PATCH = 5
+    PATCH = 6
 
     def self.version
       {
@@ -46,11 +46,12 @@ module BayMine
     end
 
     def analyze(sentence)
+      urls = urls(sentence)
       {
           v: Analyzer.version,
-          general: count_keywords(sentence),
+          general: count_keywords(sentence, urls),
           names: count_person(sentence),
-          urls: urls(sentence)
+          urls: urls
       }
     end
 
@@ -60,10 +61,14 @@ module BayMine
       URI.extract(sentence).select { |url| url =~ /^http/ }
     end
 
-    def count_keywords(sentence)
+    def count_keywords(sentence, urls = [])
       nodes = {}
 
-      extract_nodes(sentence).each do |node|
+      # make string mutable
+      s = +sentence
+      urls.each { |url| s.gsub!(url, "") }
+
+      extract_nodes(s).each do |node|
         term = extract_term(node)
         nodes[term] = (nodes[term] || 0) + 1
       end
