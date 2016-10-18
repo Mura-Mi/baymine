@@ -1,19 +1,47 @@
 require_relative '../lib/persister'
+require_relative '../lib/tw'
 require 'logger'
+
+limit = if ARGV[0]
+          ARGV[0].to_i
+        else
+          50;
+        end
+
+logger = Logger.new("log/extract-user-#{Date.today.strftime('%Y-%m-%d')}.log")
+
+def millsec
+  Time.now.instance_eval { self.to_i * 1000 + (usec / 1000) }
+end
+
+start = millsec
+count = 0
 
 begin
   p = Persister.new
   users = p.user_repository
   tweets = p.tweet_repository
 
-  tweets.distinct("user").each { |username|
-    users.update_one({user: username}, {"$set": {user: username}}, {upsert: true})
+  tw = get_twitter
+
+  user_list = users.distinct(:user)
+  tweets.distinct(:user).each { |username|
+    users.update_one({user: username}, {"$set": {user: username}}, {upsert: true}) unless user_list.include?(username)
   }
 
-  tweets.find({user_id: {"$exists": true}}).each do |tw|
-    users.update_one({user: tw[:user], user_id: {"$exists": false}}, {"$set": {user_id: tw[:user_id]}})
+  users.find({user_id: {"$exists": false}}).take(limit).each do |u|
+    puts u
+    username = u[:user]
+    user_in_twitter = tw.user_search(username).find { |twuser| twuser.screen_name.downcase == username }
+
+    users.update_one({user: username}, {"$set": {user_id: user_in_twitter.id}}) if user_in_twitter
+
+    count += 1
   end
 rescue => e
-  Logger.new("log/extract-user-#{Date.today.strftime('%Y-%m-%d')}.log").fatal e
+  logger.fatal e
 end
+
+fin = millsec
+logger.info("#{count} users has been updated to be assigned userid in #{fin - start} msec.")
 
