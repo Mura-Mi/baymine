@@ -21,7 +21,10 @@ begin
 
   tw = get_twitter
 
+  start = millsec
   user_list = users.distinct(:user)
+  fin = millsec
+  logger.info("select distinct username from tweets completed in #{fin - start} msec.")
   tweets.distinct(:user).each { |username|
     users.update_one({user: username}, {"$set": {user: username}}, {upsert: true}) unless user_list.include?(username)
   }
