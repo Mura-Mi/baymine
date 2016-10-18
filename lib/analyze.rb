@@ -1,4 +1,5 @@
 require 'natto'
+require 'uri'
 
 module BayMine
   class Analyzer
@@ -6,7 +7,7 @@ module BayMine
     # Analyzing Scheme Version (Semantic Version)
     MAJOR = 0
     MINOR = 0
-    PATCH = 2
+    PATCH = 5
 
     def self.version
       {
@@ -48,11 +49,16 @@ module BayMine
       {
           v: Analyzer.version,
           general: count_keywords(sentence),
-          names: count_person(sentence)
+          names: count_person(sentence),
+          urls: urls(sentence)
       }
     end
 
     private
+
+    def urls(sentence)
+      URI.extract(sentence).select { |url| url =~ /^http/ }
+    end
 
     def count_keywords(sentence)
       nodes = {}
