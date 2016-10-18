@@ -7,7 +7,7 @@ module BayMine
     # Analyzing Scheme Version (Semantic Version)
     MAJOR = 0
     MINOR = 0
-    PATCH = 6
+    PATCH = 7
 
     def self.version
       {
@@ -65,7 +65,7 @@ module BayMine
       nodes = {}
 
       # make string mutable
-      s = +sentence
+      s = String.new(sentence)
       urls.each { |url| s.gsub!(url, "") }
 
       extract_nodes(s).each do |node|
