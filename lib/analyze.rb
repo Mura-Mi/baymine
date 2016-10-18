@@ -16,6 +16,30 @@ module BayMine
       }
     end
 
+    def self.version_lt(prefix = "")
+      pf = nil
+      if prefix.empty?
+        pf = prefix
+      else
+        pf = prefix + "."
+      end
+      {
+          "$or": [
+              {"#{pf}major": {"$lt": MAJOR}},
+              {"$and": [
+                  {"#{pf}major": {"$eq": MAJOR}},
+                  {"$or": [
+                      {"#{pf}minor": {"$lt": MINOR}},
+                      {"$and": [
+                          {"#{pf}minor": {"$eq": MINOR}},
+                          {"#{pf}patch": {"$lt": PATCH}}
+                      ]}
+                  ]}
+              ]}
+          ]
+      }
+    end
+
     def initialize
       @natto = Natto::MeCab.new
     end

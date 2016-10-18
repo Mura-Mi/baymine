@@ -18,8 +18,7 @@ begin
   collection.find({
                       "$or": [
                           {"keywords": {"$exists": false}},
-                          # TODO improve Sem-Var query
-                          {"keywords.v.patch": {"$lt": BayMine::Analyzer.version[:patch]}}
+                          BayMine::Analyzer.version_lt("keywords.v")
                       ]
                   }).limit(30000).each do |tw|
     collection.update_one({_id: tw[:_id]}, BayMine::Tweet.new(tw).to_hash)
