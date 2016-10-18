@@ -1,4 +1,5 @@
 require_relative '../lib/persister'
+require_relative '../lib/utils'
 
 p = Persister.new
 users = p.user_repository
@@ -16,6 +17,10 @@ users.find.limit(15).each do |user|
        all_words[k] = all_words[k].to_i + v
      }
   }
-  user_words[username] = words
+  user_words[username] = BayMine::Utils.normalize(words)
 end
+
+all_words = BayMine::Utils.normalize(all_words)
+
+puts all_words
 
