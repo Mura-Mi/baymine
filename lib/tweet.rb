@@ -11,6 +11,7 @@ module BayMine
         @id = tweet.id
         @text = tweet.text
         @user = tweet.user.screen_name
+        @user_id = tweet.user.id
         @fav = tweet.favorite_count
         @rt = tweet.retweet_count
         @created_at = tweet.created_at
@@ -18,6 +19,7 @@ module BayMine
         @id = tweet[:id]
         @text = tweet[:text]
         @user = tweet[:user]
+        @user_id = tweet[:user_id]
         @fav = tweet[:fav]
         @rt = tweet[:rt]
         @created_at = tweet[:created_at]
@@ -29,6 +31,7 @@ module BayMine
           id: @id,
           text: @text,
           user: @user,
+          user_id: @user_id,
           fav: @fav,
           rt: @rt,
           keywords: ANALYZER.analyze(@text),
