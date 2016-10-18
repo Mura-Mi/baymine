@@ -30,7 +30,6 @@ begin
   }
 
   users.find({user_id: {"$exists": false}}).take(limit).each do |u|
-    puts u
     username = u[:user]
     user_in_twitter = tw.user_search(username).find { |twuser| twuser.screen_name.downcase == username }
 
