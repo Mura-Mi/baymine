@@ -42,7 +42,7 @@ begin
     [user, tf]
   }.to_h
 
-  size = users.count
+  size = user_tfs.count
 
   user_idfs = user_words.map { |user, words|
     idf = words.keys.map { |word|
