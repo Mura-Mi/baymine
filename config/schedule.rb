@@ -43,3 +43,7 @@ end
 every 1.hour, at: [17, 47] do
   kick "script/extract_users.rb"
 end
+
+every 1.day, at: "6:00 pm" do
+  kick "script/user_termfreq.rb"
+end
