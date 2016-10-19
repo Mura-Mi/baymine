@@ -15,13 +15,15 @@ def millsec
   Time.now.instance_eval { self.to_i * 1000 + (usec / 1000) }
 end
 
+limit = ARGV[0].to_i # limit 0 means no limit
+
 logger = Logger.new("log/tf-idf-#{Date.today.strftime('%Y-%m-%d')}.log")
 
 begin
   start = millsec
 
   # Count Appearance of each words
-  users.find.limit(30).each do |user|
+  users.find.limit(limit).each do |user|
     username = user[:user]
     words = {}
     tweets_repo.find({user: username}).each { |t|
