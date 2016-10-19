@@ -37,9 +37,11 @@ begin
     username = u[:user]
     user_in_twitter = tw.users(username).find { |twuser| twuser.screen_name.downcase == username }
 
-    users.update_one({user: username}, {"$set": {user_id: user_in_twitter.id}}) if user_in_twitter
+    if user_in_twitter
+      users.update_one({user: username}, {"$set": {user_id: user_in_twitter.id}})
+      count += 1
+    end
 
-    count += 1
   end
 
   fin = millsec
