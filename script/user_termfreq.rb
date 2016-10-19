@@ -65,7 +65,7 @@ begin
   end
 
   fin = millsec
-  logger.info "Refining #{sizes} user's TF-IDFs is completed in #{fin - start} msec."
+  logger.info "Refining #{size} user's TF-IDFs is completed in #{fin - start} msec."
 rescue => e
   logger.fatal e
 end
