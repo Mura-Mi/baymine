@@ -35,7 +35,7 @@ begin
 
   users.find({user_id: {"$exists": false}}).take(limit).each do |u|
     username = u[:user]
-    user_in_twitter = tw.user_search(username).find { |twuser| twuser.screen_name.downcase == username }
+    user_in_twitter = tw.users(username).find { |twuser| twuser.screen_name.downcase == username }
 
     users.update_one({user: username}, {"$set": {user_id: user_in_twitter.id}}) if user_in_twitter
 
