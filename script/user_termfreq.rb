@@ -15,7 +15,11 @@ def millsec
   Time.now.instance_eval { self.to_i * 1000 + (usec / 1000) }
 end
 
-limit = ARGV[0].to_i # limit 0 means no limit
+limit = if ARGV[0]
+          ARGV[0].to_i # limit 0 means no limit
+        else
+          2 ** 30
+        end
 
 logger = Logger.new("log/tf-idf-#{Date.today.strftime('%Y-%m-%d')}.log")
 
