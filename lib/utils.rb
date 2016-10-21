@@ -15,5 +15,13 @@ module BayMine
         [k, v / length]
       }.to_h
     end
+
+    def self.arg_to_int(index, default = 0)
+      if ARGV[index]
+        ARGV[index].to_i
+      else
+        default
+      end
+    end
   end
 end
