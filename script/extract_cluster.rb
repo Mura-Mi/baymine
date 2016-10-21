@@ -41,9 +41,15 @@ end
 builders = (0...clustor_count).map { GravityBuilder.new }
 
 users = user_repository.find.to_a
+
+all_words = []
 users.each do |u|
-  builders.sample.add(u)
+  u[:tf_idf].keys.each { |k| all_words << k }
 end
+
+all_words.uniq!.sort!.freeze
+
+# builders.sample.add(u)
 
 logger.debug { builders.map { |b| b.users.count } }
 
