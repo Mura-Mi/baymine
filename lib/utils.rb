@@ -23,5 +23,13 @@ module BayMine
         default
       end
     end
+
+    def self.calc_distance(hash1, hash2)
+      tmp = 0
+      (hash1.keys | hash2.keys).each do |key|
+        tmp += (hash1[key].to_f - hash2[key].to_f) ** 2
+      end
+      Math.sqrt(tmp)
+    end
   end
 end
