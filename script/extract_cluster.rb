@@ -24,7 +24,7 @@ class GravityBuilder
     # user[:tf_idf].each do |word, value|
     #   @tf_idf_sum[word] = @tf_idf_sum[word].to_f + value
     # end
-    @tf_idf_sum = @tf_idf_sum + vec
+    @tf_idf_sum = (@tf_idf_sum || N[Array.new(vec.size) {0.0}]) + vec
   end
 
   def clear
@@ -75,15 +75,15 @@ until none_moved do
 
   none_moved = true
 
-  users.each do |u|
+  user_vec.each do |u, v|
     min_distance = nil
     nearest = nil
 
-    logger.debug u[:user]
+    logger.debug u
 
     gravities.map.with_index { |g, n_th|
-      distance = BayMine::Utils.calc_distance(g, u[:tf_idf])
-      logger.debug { "#{n_th} for #{u[:user]}" }
+      distance = (g - v).map { |a| a ** 2 }.sum[0]
+      logger.debug { "#{n_th} for #{u} = #{distance}" }
       if min_distance.nil? || min_distance > distance
         none_moved = false
         min_distance = distance
@@ -91,7 +91,7 @@ until none_moved do
       end
     }
 
-    builders[nearest].add(u)
+    builders[nearest].add(u, v)
   end
 
   count += 1
