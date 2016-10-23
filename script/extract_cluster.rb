@@ -21,7 +21,7 @@ class GravityBuilder
 
   def add(user, vec)
     @users << user
-    @tf_idf_sum = (@tf_idf_sum || N[Array.new(vec.size) {0.0}]) + vec
+    @tf_idf_sum = (@tf_idf_sum || N[Array.new(vec.size) { 0.0 }]) + vec
   end
 
   def clear
@@ -29,8 +29,12 @@ class GravityBuilder
     @tf_idf_sum = nil
   end
 
-  def grav_vector
-    @tf_idf_sum / @users.size
+  def grav_vector(dim)
+    if @tf_idf_sum
+      @tf_idf_sum / @users.size
+    else
+      N[Array.new(dim) { 0.0 }]
+    end
   end
 end
 
@@ -44,17 +48,25 @@ users.each do |u|
   u[:tf_idf].keys.each { |k| all_words << k }
 end
 
-all_words.uniq!.sort!.freeze
+all_words = all_words.uniq!.sort!.freeze
+# logger.debug all_words
+dim = all_words.count
 
 user_vec = users.map.with_index { |user, i|
   vec = N[Array.new(all_words.count) { 0.0 }]
   user[:tf_idf].each do |word, value|
-    vec[all_words.index(word)] = value
+    # logger.debug word
+    idx = all_words.bsearch_index { |el| el >= word }
+    # logger.debug i
+    # logger.debug all_words.include?(word)
+    vec[idx] = value
   end
-  [user[:name], vec]
-
   logger.debug { "#{i} / #{uc}, user: #{user[:user]}" }
-}
+
+  [user[:user], vec]
+}.to_h
+
+# logger.debug user_vec
 
 user_vec.each do |u, v|
   builders.sample.add(u, v)
@@ -67,7 +79,7 @@ none_moved = false
 
 count = 0
 until none_moved do
-  gravities = builders.map { |b| b.grav_vector }
+  gravities = builders.map { |b| b.grav_vector(dim) }
   builders.each { |b| b.clear }
 
   none_moved = true
@@ -76,11 +88,11 @@ until none_moved do
     min_distance = nil
     nearest = nil
 
-    logger.debug u
+    # logger.debug u
 
     gravities.map.with_index { |g, n_th|
       distance = (g - v).map { |a| a ** 2 }.sum[0]
-      logger.debug { "#{n_th} for #{u} = #{distance}" }
+      # logger.debug { "#{n_th} for #{u} = #{distance}" }
       if min_distance.nil? || min_distance > distance
         none_moved = false
         min_distance = distance
@@ -92,8 +104,8 @@ until none_moved do
   end
 
   count += 1
-  logger.debug { "#{count}th loop end." }
-  logger.debug { builders.map { |b| b.users.count } }
+  # logger.debug { "#{count}th loop end." }
+  # logger.debug { builders.map { |b| b.users.count } }
 end
 
 puts builders.map { |b| b.grav_vector }
