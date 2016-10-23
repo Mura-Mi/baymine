@@ -1,6 +1,7 @@
 require_relative '../lib/persister'
 require_relative '../lib/utils'
 require 'logger'
+require 'nmatrix'
 
 logger = Logger.new(STDOUT)
 
@@ -15,32 +16,31 @@ class GravityBuilder
 
   def initialize
     @users = []
-    @tf_idf_sum = {}
+    @tf_idf_sum = nil
   end
 
-  def add(user)
+  def add(user, vec)
     @users << user
-    user[:tf_idf].each do |word, value|
-      @tf_idf_sum[word] = @tf_idf_sum[word].to_f + value
-    end
+    # user[:tf_idf].each do |word, value|
+    #   @tf_idf_sum[word] = @tf_idf_sum[word].to_f + value
+    # end
+    @tf_idf_sum = @tf_idf_sum + vec
   end
 
   def clear
     @users.clear
-    @tf_idf_sum.clear
+    @tf_idf_sum = nil
   end
 
   def grav_vector
-    count = @users.size
-    @tf_idf_sum.map { |word, value|
-      [word, value / count]
-    }.to_h
+    @tf_idf_sum / @users.size
   end
 end
 
 builders = (0...clustor_count).map { GravityBuilder.new }
 
 users = user_repository.find.to_a
+uc = users.count
 
 all_words = []
 users.each do |u|
@@ -49,9 +49,22 @@ end
 
 all_words.uniq!.sort!.freeze
 
-# builders.sample.add(u)
+user_vec = users.map.with_index { |user, i|
+  vec = N[Array.new(all_words.count) { 0.0 }]
+  user[:tf_idf].each do |word, value|
+    vec[all_words.index(word)] = value
+  end
+  [user[:name], vec]
+
+  logger.debug { "#{i} / #{uc}, user: #{user[:user]}" }
+}
+
+user_vec.each do |u, v|
+  builders.sample.add(u, v)
+end
 
 logger.debug { builders.map { |b| b.users.count } }
+# logger.debug { user_vec }
 
 none_moved = false
 
@@ -70,7 +83,7 @@ until none_moved do
 
     gravities.map.with_index { |g, n_th|
       distance = BayMine::Utils.calc_distance(g, u[:tf_idf])
-      logger.debug { "#{u[:user]}, #{n_th}" }
+      logger.debug { "#{n_th} for #{u[:user]}" }
       if min_distance.nil? || min_distance > distance
         none_moved = false
         min_distance = distance
