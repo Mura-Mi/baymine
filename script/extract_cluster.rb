@@ -21,9 +21,6 @@ class GravityBuilder
 
   def add(user, vec)
     @users << user
-    # user[:tf_idf].each do |word, value|
-    #   @tf_idf_sum[word] = @tf_idf_sum[word].to_f + value
-    # end
     @tf_idf_sum = (@tf_idf_sum || N[Array.new(vec.size) {0.0}]) + vec
   end
 
