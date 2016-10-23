@@ -52,6 +52,7 @@ all_words = all_words.uniq!.sort!.freeze
 # logger.debug all_words
 dim = all_words.count
 
+start = Time.now
 user_vec = users.map.with_index { |user, i|
   vec = N[Array.new(all_words.count) { 0.0 }]
   user[:tf_idf].each do |word, value|
@@ -61,16 +62,19 @@ user_vec = users.map.with_index { |user, i|
     # logger.debug all_words.include?(word)
     vec[idx] = value
   end
-  logger.debug { "#{i} / #{uc}, user: #{user[:user]}" }
+  logger.debug { "#{i + 1} / #{uc}, user: #{user[:user]}" }
 
   [user[:user], vec]
 }.to_h
+logger.debug { "User data load completed in #{Time.now - start} sec." }
 
 # logger.debug user_vec
 
+start = Time.now
 user_vec.each do |u, v|
   builders.sample.add(u, v)
 end
+logger.debug { "Put to init: #{Time.now - start} sec." }
 
 logger.debug { builders.map { |b| b.users.count } }
 # logger.debug { user_vec }
@@ -84,11 +88,10 @@ until none_moved do
 
   none_moved = true
 
+  u_count = 0
   user_vec.each do |u, v|
     min_distance = nil
     nearest = nil
-
-    # logger.debug u
 
     gravities.map.with_index { |g, n_th|
       distance = (g - v).map { |a| a ** 2 }.sum[0]
@@ -101,11 +104,16 @@ until none_moved do
     }
 
     builders[nearest].add(u, v)
+
+    logger.debug {
+      u_count += 1
+      "user evaluation #{u_count} / #{uc} completed."
+    }
   end
 
   count += 1
-  # logger.debug { "#{count}th loop end." }
-  # logger.debug { builders.map { |b| b.users.count } }
+  logger.debug { "#{count}th loop end." }
+  logger.debug { builders.map { |b| b.users.count } }
 end
 
 puts builders.map { |b| b.grav_vector }
