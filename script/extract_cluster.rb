@@ -57,6 +57,8 @@ end
 all_words = all_words.uniq!.sort!.freeze
 dim = all_words.count
 
+logger.debug { "Analysis dimension: #{dim}" }
+
 start = Time.now
 user_vec = users.map.with_index { |user, i|
   vec = Array.new(all_words.count) { 0.0 }
@@ -84,6 +86,8 @@ none_moved = false
 
 count = 0
 user_belong_to = {}
+prev_gravities = nil
+
 until none_moved do
   gravities = builders.map { |b| b.grav_vector(dim) }
   builders.each { |b| b.clear }
@@ -118,6 +122,13 @@ until none_moved do
   count += 1
   logger.debug { "#{count}th loop end." }
   logger.debug { "Cluster count: #{builders.map { |b| b.users.count }}" }
+  logger.debug {
+    norms = gravities.map.with_index { |g, iii|
+      (g - prev_gravities[iii]).nrm2
+    }
+    "Gravity movement: #{norms}"
+  } if prev_gravities != nil
+  prev_gravities = gravities
 end
 
 result = builders.map { |b| b.grav_vector(dim) }
