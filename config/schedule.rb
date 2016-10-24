@@ -44,6 +44,12 @@ every 1.hour, at: [17, 47] do
   kick "script/extract_users.rb"
 end
 
+# JST 3:00 am
 every 1.day, at: "6:00 pm" do
   kick "script/user_termfreq.rb"
+end
+
+# JST 4:00 am
+every 1.day, at: "7:00 pm" do
+  kick "script/extract_cluster.rb"
 end
