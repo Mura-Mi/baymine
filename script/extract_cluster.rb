@@ -131,6 +131,6 @@ until none_moved do
   prev_gravities = gravities
 end
 
-result = builders.map { |b| b.grav_vector(dim) }
+result = builders.map { |b| b.grav_vector(dim).to_a }
 logger.debug result
 puts result
