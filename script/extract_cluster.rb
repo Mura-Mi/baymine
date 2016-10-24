@@ -40,7 +40,7 @@ end
 
 builders = (0...clustor_count).map { GravityBuilder.new }
 
-users = user_repository.find.to_a
+users = user_repository.find.limit(1_000).to_a
 uc = users.count
 
 all_words = []
