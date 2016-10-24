@@ -56,10 +56,7 @@ start = Time.now
 user_vec = users.map.with_index { |user, i|
   vec = Array.new(all_words.count) { 0.0 }
   user[:tf_idf].each do |word, value|
-    # logger.debug word
     idx = all_words.bsearch_index { |el| el >= word }
-    # logger.debug i
-    # logger.debug all_words.include?(word)
     vec[idx] = value
   end
   logger.debug { "#{i + 1} / #{uc}, user: #{user[:user]}" }
@@ -68,16 +65,9 @@ user_vec = users.map.with_index { |user, i|
 }.to_h
 logger.debug { "User data load completed in #{Time.now - start} sec." }
 
-# logger.debug user_vec
-
-start = Time.now
 user_vec.take(clustor_count).each_with_index do |(u, v), i|
-  builders[i % clustor_count].add(u, v) #.sample.add(u, v)
+  builders[i % clustor_count].add(u, v)
 end
-logger.debug { "Put to init: #{Time.now - start} sec." }
-
-logger.debug { builders.map { |b| b.users.count } }
-# logger.debug { user_vec }
 
 none_moved = false
 
@@ -95,7 +85,6 @@ until none_moved do
 
     gravities.map.with_index { |g, n_th|
       distance = (g - v).nrm2
-      # logger.debug { "#{n_th} for #{u} = #{distance}" }
       if min_distance.nil? || min_distance > distance
         none_moved = false
         min_distance = distance
@@ -105,10 +94,10 @@ until none_moved do
 
     builders[nearest].add(u, v)
 
+    u_count += 1
     logger.debug {
-      u_count += 1
       "user evaluation #{u_count} / #{uc} completed."
-    }
+    } if u_count % 10 == 0 || u_count == uc
   end
 
   count += 1
