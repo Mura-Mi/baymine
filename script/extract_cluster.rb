@@ -54,7 +54,7 @@ dim = all_words.count
 
 start = Time.now
 user_vec = users.map.with_index { |user, i|
-  vec = N[Array.new(all_words.count) { 0.0 }]
+  vec = Array.new(all_words.count) { 0.0 }
   user[:tf_idf].each do |word, value|
     # logger.debug word
     idx = all_words.bsearch_index { |el| el >= word }
@@ -64,15 +64,15 @@ user_vec = users.map.with_index { |user, i|
   end
   logger.debug { "#{i + 1} / #{uc}, user: #{user[:user]}" }
 
-  [user[:user], vec]
+  [user[:user], N[vec]]
 }.to_h
 logger.debug { "User data load completed in #{Time.now - start} sec." }
 
 # logger.debug user_vec
 
 start = Time.now
-user_vec.each do |u, v|
-  builders.sample.add(u, v)
+user_vec.take(clustor_count).each_with_index do |(u, v), i|
+  builders[i % clustor_count].add(u, v) #.sample.add(u, v)
 end
 logger.debug { "Put to init: #{Time.now - start} sec." }
 
@@ -94,7 +94,7 @@ until none_moved do
     nearest = nil
 
     gravities.map.with_index { |g, n_th|
-      distance = (g - v).map { |a| a ** 2 }.sum[0]
+      distance = (g - v).nrm2
       # logger.debug { "#{n_th} for #{u} = #{distance}" }
       if min_distance.nil? || min_distance > distance
         none_moved = false
