@@ -3,13 +3,19 @@ require_relative '../lib/utils'
 require 'logger'
 require 'nmatrix'
 
-logger = Logger.new(STDOUT)
+logger = Logger.new("log/cluster-#{Date.today.strftime('%Y-%m-%d')}.log")
 
 persister = Persister.new
 
 user_repository = persister.user_repository
 
 clustor_count = BayMine::Utils.arg_to_int(0, 20)
+limit = BayMine::Utils.arg_to_int(1, 2_000)
+init_clustor_size = BayMine::Utils.arg_to_int(1, 1)
+
+logger.info {
+  "Start extracting clustor: #{clustor_count} clusters with #{limit} users."
+}
 
 class GravityBuilder
   attr_reader :users
@@ -40,7 +46,7 @@ end
 
 builders = (0...clustor_count).map { GravityBuilder.new }
 
-users = user_repository.find.limit(1_000).to_a
+users = user_repository.find.limit(limit).to_a
 uc = users.count
 
 all_words = []
@@ -49,7 +55,6 @@ users.each do |u|
 end
 
 all_words = all_words.uniq!.sort!.freeze
-# logger.debug all_words
 dim = all_words.count
 
 start = Time.now
@@ -59,19 +64,26 @@ user_vec = users.map.with_index { |user, i|
     idx = all_words.bsearch_index { |el| el >= word }
     vec[idx] = value
   end
-  logger.debug { "#{i + 1} / #{uc}, user: #{user[:user]}" }
+
+  logger.debug {
+    "#{i + 1} / #{uc}, user: #{user[:user]}"
+  } if (i + 1) % 100 == 0 || (i + 1) == uc
 
   [user[:user], N[vec]]
 }.to_h
 logger.debug { "User data load completed in #{Time.now - start} sec." }
 
-user_vec.take(clustor_count).each_with_index do |(u, v), i|
+# Initial Cluster
+start = Time.now
+user_vec.take(clustor_count * init_clustor_size).each_with_index do |(u, v), i|
   builders[i % clustor_count].add(u, v)
 end
+logger.debug { "Initial clustor created in #{Time.now - start} seconds." }
 
 none_moved = false
 
 count = 0
+user_belong_to = {}
 until none_moved do
   gravities = builders.map { |b| b.grav_vector(dim) }
   builders.each { |b| b.clear }
@@ -86,13 +98,16 @@ until none_moved do
     gravities.map.with_index { |g, n_th|
       distance = (g - v).nrm2
       if min_distance.nil? || min_distance > distance
-        none_moved = false
         min_distance = distance
         nearest = n_th
       end
     }
 
     builders[nearest].add(u, v)
+    none_moved = none_moved && !(user_belong_to[u].nil?) && user_belong_to[u] == nearest
+    user_belong_to[u] = nearest
+
+    # logger.debug("#{u}: #{user_belong_to[u]}")
 
     u_count += 1
     logger.debug {
@@ -102,7 +117,9 @@ until none_moved do
 
   count += 1
   logger.debug { "#{count}th loop end." }
-  logger.debug { builders.map { |b| b.users.count } }
+  logger.debug { "Cluster count: #{builders.map { |b| b.users.count }}" }
 end
 
-puts builders.map { |b| b.grav_vector }
+result = builders.map { |b| b.grav_vector(dim) }
+logger.debug result
+puts result
