@@ -30,7 +30,12 @@ begin
 
   users.find({user_id: {"$exists": false}}).take(limit).each do |u|
     username = u[:user]
-    user_in_twitter = tw.users(username).find { |twuser| twuser.screen_name.downcase == username }
+    begin
+      user_in_twitter = tw.users(username).find { |twuser| twuser.screen_name.downcase == username }
+    rescue => e
+      logger.warn(username, e)
+      next
+    end
 
     if user_in_twitter
       users.update_one({user: username}, {"$set": {user_id: user_in_twitter.id}})
