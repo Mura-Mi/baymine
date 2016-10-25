@@ -58,7 +58,7 @@ module BayMine
     private
 
     def urls(sentence)
-      URI.extract(sentence).select { |url| url =~ /^http/ }
+      URI.extract(sentence).select { |url| url =~ /^http/ } unless sentence.nil?
     end
 
     def count_keywords(sentence, urls = [])
