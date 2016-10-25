@@ -18,6 +18,8 @@ module BayMine
       @running = true
     end
 
+    alias_method :stop, :end
+
     def end(level, format)
       # TODO method dynamic invoke to define log level
       @logger.info { format % (millsec - @start) }

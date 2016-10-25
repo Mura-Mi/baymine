@@ -1,6 +1,6 @@
 require_relative '../lib/persister'
 require_relative '../lib/utils'
-require 'logger'
+require_relative '../lib/zatsu_logger'
 
 p = Persister.new
 users = p.user_repository
@@ -9,20 +9,12 @@ tweets_repo = p.tweet_repository
 user_words = {}
 all_freq = {}
 
-def millsec
-  Time.now.instance_eval { self.to_i * 1000 + (usec / 1000) }
-end
+limit = BayMine::Utils.arg_to_int(0, 2 ** 30)
 
-limit = if ARGV[0]
-          ARGV[0].to_i # limit 0 means no limit
-        else
-          2 ** 30
-        end
-
-logger = Logger.new("log/tf-idf-#{Date.today.strftime('%Y-%m-%d')}.log")
+logger = Logger.new("tf-idf")
 
 begin
-  start = millsec
+  logger.start
 
   # Count Appearance of each words
   users.find.limit(limit).each do |user|
@@ -64,11 +56,10 @@ begin
   }.to_h
 
   user_tf_idfs.each do |user, tf_idf|
-    users.update_one({user: user}, {"$set": { tf_idf: tf_idf, tf_idf_created_at: Time.now }})
+    users.update_one({user: user}, {"$set": {tf_idf: tf_idf, tf_idf_created_at: Time.now}})
   end
 
-  fin = millsec
-  logger.info "Refining #{size} user's TF-IDFs is completed in #{fin - start} msec."
+  logger.stop { "Refining #{size} user's TF-IDFs is completed in %s msec." }
 rescue => e
   logger.fatal e
 end

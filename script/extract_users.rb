@@ -1,6 +1,6 @@
-require_relative '../lib/persister'
 require_relative '../lib/tw'
-require 'logger'
+require_relative '../lib/persister'
+require_relative '../lib/zatsu_logger'
 
 limit = if ARGV[0]
           ARGV[0].to_i
@@ -8,11 +8,7 @@ limit = if ARGV[0]
           50;
         end
 
-logger = Logger.new("log/extract-user-#{Date.today.strftime('%Y-%m-%d')}.log")
-
-def millsec
-  Time.now.instance_eval { self.to_i * 1000 + (usec / 1000) }
-end
+logger = BayMine::LogMan.new("extract-user")
 
 begin
   p = Persister.new
@@ -21,16 +17,15 @@ begin
 
   tw = get_twitter
 
-  start = millsec
+  logger.start
   user_list = users.distinct(:user)
-  fin = millsec
-  logger.info("select distinct username from tweets completed in #{fin - start} msec.")
+  logger.stop(:info, "select distinct username from tweets completed in %s msec.")
 
   tweets.distinct(:user).each { |username|
     users.update_one({user: username}, {"$set": {user: username}}, {upsert: true}) unless user_list.include?(username)
   }
 
-  start = millsec
+  logger.start
   count = 0
 
   users.find({user_id: {"$exists": false}}).take(limit).each do |u|
@@ -44,8 +39,7 @@ begin
 
   end
 
-  fin = millsec
-  logger.info("#{count} users has been updated to be assigned userid in #{fin - start} msec.")
+  logger.stop(:info, "#{count} users has been updated to be assigned userid in %s msec.")
 
 rescue => e
   logger.fatal e

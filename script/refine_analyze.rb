@@ -1,22 +1,15 @@
 require_relative '../lib/persister'
 require_relative '../lib/analyze'
 require_relative '../lib/tweet'
-require 'logger'
+require_relative '../lib/zatsu_logger'
+require_relative '../lib/utils'
 
-def millsec
-  Time.now.instance_eval { self.to_i * 1000 + (usec / 1000) }
-end
+logger = BayMine::LogMan.new("analyze")
 
-logger = Logger.new("log/analyze-#{Date.today.strftime('%Y-%m-%d')}.log")
-
-start = millsec
+logger.start
 count = 0
 
-limit = if ARGV[0]
-          ARGV[0].to_i
-          else
-            30000;
-        end
+limit = BayMine::Utils.arg_to_int(0, 30000)
 
 begin
   collection = Persister.new.driver[:tw_test]
@@ -36,7 +29,6 @@ rescue => e
   logger.fatal e
 end
 
-completed = millsec
-
 ver = BayMine::Analyzer.version
-logger.info("Analyzing #{count} tweet(s) has been completed in #{completed - start} msec. Updated to #{ver[:major]}.#{ver[:minor]}.#{ver[:patch]}") if count > 0
+logger.stop(:info,
+            "Analyzing #{count} tweet(s) has been completed in %s msec. Updated to #{ver[:major]}.#{ver[:minor]}.#{ver[:patch]}") if count > 0

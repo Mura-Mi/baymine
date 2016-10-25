@@ -1,10 +1,9 @@
-require 'logger'
-require 'date'
+require_relative '../lib/zatsu_logger'
 require_relative '../lib/tw'
 require_relative '../lib/tweet'
 require_relative '../lib/persister'
 
-logger = Logger.new("log/collect-#{Date.today.strftime('%Y-%m-%d')}.log")
+logger = BayMine::LogMan.new("collect")
 
 begin
   tw = get_twitter
@@ -27,7 +26,7 @@ begin
     end
   end
 
-  logger.info("Persist #{count} tweets to collection tw_test")
+  logger.info{ "Persist #{count} tweets to collection tw_test" }
 rescue => e
   logger.fatal e
 end
