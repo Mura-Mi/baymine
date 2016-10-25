@@ -5,7 +5,7 @@ require_relative '../lib/chat'
 logger = BayMine::LogMan.new("count")
 
 begin
-  count = Persister.new.driver[:tw_test].count()
+  count = Persister.new.tweet_repository.count
 
   logger.info { "#{count} tweets was saved." }
 
