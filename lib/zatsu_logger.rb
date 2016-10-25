@@ -2,7 +2,6 @@ require 'logger'
 
 module BayMine
 
-
   class LogMan
 
     attr_reader :logger
