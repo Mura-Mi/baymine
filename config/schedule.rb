@@ -50,6 +50,6 @@ every 1.day, at: "6:00 pm" do
 end
 
 # JST 4:00 am
-every 1.day, at: "7:00 pm" do
+every 1.day, at: [1, 7, 13, 19] do
   kick "script/extract_cluster.rb"
 end

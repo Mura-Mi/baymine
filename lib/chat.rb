@@ -19,7 +19,11 @@ module BayMine
     end
 
     def report_tw_count(count)
-      @slack.chat_postMessage(channel: "#general", text: "Now #{count} tweets in strage.", as_user: true)
+      @slack.chat_postMessage(channel: "#count", text: "Now #{count} tweets in strage.", as_user: true)
+    end
+
+    def finish_extract_cluster(second, c)
+      @slack.chat_postMessage(channel: "#cluster", text: "Cluster \##{c} extract completed in #{(second / 60).to_i} minutes #{(second % 60).to_i} seconds.", as_user: true)
     end
   end
 end

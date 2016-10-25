@@ -19,5 +19,9 @@ class Persister
     @driver[:users]
   end
 
+  def cluster_repository
+    @driver[:clusters]
+  end
+
 
 end

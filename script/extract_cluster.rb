@@ -11,7 +11,7 @@ user_repository = persister.user_repository
 
 clustor_count = BayMine::Utils.arg_to_int(0, 20)
 limit = BayMine::Utils.arg_to_int(1, 2_000)
-init_clustor_size = BayMine::Utils.arg_to_int(1, 1)
+init_clustor_size = BayMine::Utils.arg_to_int(2, 1)
 
 logger.info {
   "Start extracting clustor: #{clustor_count} clusters with #{limit} users."
@@ -43,6 +43,8 @@ class GravityBuilder
     end
   end
 end
+
+start = Time.now
 
 builders = (0...clustor_count).map { GravityBuilder.new }
 
@@ -132,5 +134,16 @@ until none_moved do
 end
 
 result = builders.map { |b| b.grav_vector(dim).to_a }
-logger.debug result
-puts result
+# logger.debug result
+# puts result
+
+clusters = persister.cluster_repository
+revision = clusters.distinct("rev").max.to_i + 1
+
+result.each.with_index { |gravity, index|
+  grav_map = all_words.zip(gravity).select { |pair| pair[1] > 0 }.to_h
+  clusters.insert_one({id: index, rev: revision, g: grav_map, created_at: Time.now})
+}
+
+require_relative '../lib/chat'
+BayMine::Chat.new.finish_extract_cluster(Time.now - start, revision)

@@ -18,8 +18,7 @@ module BayMine
     end
 
     def stop(level, format)
-      # TODO method dynamic invoke to define log level
-      @logger.info { format % (millsec - @start) }
+      @logger.send(level) { format % (millsec - @start) }
       @start = nil
       @running = false
     end
