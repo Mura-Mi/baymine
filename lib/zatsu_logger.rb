@@ -8,7 +8,7 @@ module BayMine
     attr_reader :logger
 
     def initialize(name)
-      @logger = Logger.new("log/#{name}-#{Date.today.strftime('%Y-%m-%d')}.log")
+      @logger = Logger.new("log/#{name}.log", 'daily')
       @start = nil
       @running = false
     end
@@ -23,6 +23,22 @@ module BayMine
       @logger.info { format % (millsec - @start) }
       @start = nil
       @running = false
+    end
+
+    def fatal(obj, &block)
+      if block_given?
+        @logger.fatal &block
+      else
+        @logger.fatal obj
+      end
+    end
+
+    def info(&block)
+      @logger.info &block
+    end
+
+    def debug(&block)
+      @logger.debug &block
     end
 
     def running?
