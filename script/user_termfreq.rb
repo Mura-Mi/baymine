@@ -11,7 +11,7 @@ all_freq = {}
 
 limit = BayMine::Utils.arg_to_int(0, 2 ** 30)
 
-logger = Logger.new("tf-idf")
+logger = BayMine::LogMan.new("tf-idf")
 
 begin
   logger.start
