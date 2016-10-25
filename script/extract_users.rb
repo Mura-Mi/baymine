@@ -33,7 +33,8 @@ begin
     begin
       user_in_twitter = tw.users(username).find { |twuser| twuser.screen_name.downcase == username }
     rescue => e
-      logger.warn(username, e)
+      logger.warn username
+      logger.warn e
       next
     end
 

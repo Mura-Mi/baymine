@@ -39,6 +39,14 @@ module BayMine
       @logger.debug &block
     end
 
+    def warn(obj, &block)
+      if block_given?
+        @logger.warn &block
+      else
+        @logger.warn obj
+      end
+    end
+
     def running?
       @running
     end
