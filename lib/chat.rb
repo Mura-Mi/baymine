@@ -22,8 +22,10 @@ module BayMine
       @slack.chat_postMessage(channel: "#count", text: "Now #{count} tweets in strage.", as_user: true)
     end
 
-    def finish_extract_cluster(second, c)
-      @slack.chat_postMessage(channel: "#cluster", text: "Cluster \##{c} extract completed in #{(second / 60).to_i} minutes #{(second % 60).to_i} seconds.", as_user: true)
+    def finish_extract_cluster(second, c, sample_size, clusters)
+      @slack.chat_postMessage(channel: "#cluster",
+                              text: "#{clusters} Clusters \##{c} extract completed in #{(second / 60).to_i} minutes #{(second % 60).to_i} seconds. Sample size: #{sample_size}",
+                              as_user: true)
     end
   end
 end

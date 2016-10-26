@@ -146,4 +146,4 @@ result.each.with_index { |gravity, index|
 }
 
 require_relative '../lib/chat'
-BayMine::Chat.new.finish_extract_cluster(Time.now - start, revision)
+BayMine::Chat.new.finish_extract_cluster(Time.now - start, revision, uc, clustor_count)
